@@ -1,34 +1,35 @@
-from pathlib import Path
-content = """name: ساخت APK کربلی در شهر
-on: workflow_dispatch:
-jobs: build: runs-on: ubuntu-latest
-steps:
-  - name: دریافت فایل‌های مخزن
-    uses: actions/checkout@v4
+name: Build Karboli APK
 
-  - name: نصب Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: '17'
+on:
+  workflow_dispatch:
 
-  - name: باز کردن پروژه
-    run: |
-      mkdir -p project
-      unzip -q karboli_ready.zip -d project
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-  - name: ساخت APK
-    working-directory: project
-    run: |
-      chmod +x gradlew 2>/dev/null || true
-      if [ -f gradlew ]; then
-        ./gradlew assembleDebug
-      else
-        gradle assembleDebug
-      fi
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  - name: ذخیره APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: karboli-dar-shahr-apk
-      path: project/app/build/outputs/apk/debug/*.apk
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Extract project
+        run: |
+          mkdir project
+          unzip -q karboli_ready.zip -d project
+
+      - name: Build APK
+        working-directory: project
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: karboli-dar-shahr-apk
+          path: project/app/build/outputs/apk/debug/*.apk
