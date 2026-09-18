@@ -1,6 +1,5 @@
 name: Build Karboli APK
-
-on:
+"on":
   workflow_dispatch:
 
 jobs:
